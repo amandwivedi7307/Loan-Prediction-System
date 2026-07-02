@@ -27,11 +27,11 @@ for col in categorical_cols:
 
 # Exploratory Data Analysis (EDA)  [credit history vs loan Status]
 
-#sns.countplot(x = 'Credit_History', hue = 'Loan_Status' , data = df) # this will show the count of loan status based on credit history in the dataset in graphical format
-#plt.show()
+sns.countplot(x = 'Credit_History', hue = 'Loan_Status' , data = df) # this will show the count of loan status based on credit history in the dataset in graphical format
+plt.show()
 # Income Distribution
-#sns.histplot(df['ApplicantIncome'], kde=True) # this will show the distribution of applicant income in the dataset in graphical format
-#plt.show()
+sns.histplot(df['ApplicantIncome'], kde=True) # this will show the distribution of applicant income in the dataset in graphical format
+plt.show()
 
 # Feature Engineering (Encoding categorical variables) [create total income column]
 
