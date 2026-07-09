@@ -126,23 +126,50 @@ st.sidebar.metric(
 
 st.markdown("""
 <div style="
-background:linear-gradient(90deg,#2563EB,#1E3A8A);
-padding:25px;
-border-radius:15px;
+background:linear-gradient(90deg,#2563EB,#1E40AF,#0EA5E9);
+padding:30px;
+border-radius:20px;
 text-align:center;
-color:white;
+box-shadow:0 8px 30px rgba(0,0,0,.25);
+margin-bottom:20px;
 ">
 
-<h1>🏦 AI Loan Prediction Dashboard</h1>
+<h1 style="color:white;font-size:42px;">
+🏦 AI Loan Prediction Dashboard
+</h1>
 
-<h4>
+<p style="color:white;font-size:20px;">
 Predict Loan Approval using Machine Learning
-</h4>
+</p>
 
 </div>
-""",unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+col1,col2,col3,col4 = st.columns(4)
 
-st.write("")
+with col1:
+    st.metric(
+        "Accuracy",
+        "78.38%"
+    )
+
+with col2:
+    st.metric(
+        "Algorithm",
+        "Logistic Reg."
+    )
+
+with col3:
+    st.metric(
+        "Dataset",
+        "614 Records"
+    )
+
+with col4:
+    st.metric(
+        "Features",
+        "13"
+    )
+
 
 # -----------------------------
 # Input Form
@@ -215,9 +242,17 @@ with right:
 
 st.write("")
 
-predict = st.button(
-    "🚀 Predict Loan Approval"
-)
+# -----------------------------
+# Center Predict Button
+# -----------------------------
+
+left_space, center_button, right_space = st.columns([1, 2, 1])
+
+with center_button:
+    predict = st.button(
+        "🚀 Predict Loan Approval",
+        use_container_width=True
+    )
 
 # -----------------------------
 # Prediction
@@ -253,8 +288,6 @@ if predict:
 
     prediction = model.predict(input_df)[0]
 
-    prediction = model.predict(input_df)[0]
-
     probs = model.predict_proba(input_df)[0]
 
     classes = model.classes_
@@ -276,23 +309,57 @@ if predict:
     if prediction == "Y":
 
         st.balloons()
+        st.markdown(f"""
+        <div style="
+        background:linear-gradient(135deg,#16a34a,#22c55e);
+        padding:25px;
+        border-radius:18px;
+        color:white;
+        text-align:center;
+        box-shadow:0 8px 20px rgba(0,0,0,.25);
+        ">
 
-        st.toast("🎉 Loan Approved")
+        <h1>✅ LOAN APPROVED</h1>
 
-        st.progress(approval_probability / 100)
+        <h2>Approval Probability : {approval_probability:.2f}%</h2>
 
-        st.markdown("## ✅ Loan Approved")
+        <p>Your application has a high chance of approval.</p>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.progress(approval_probability/100)
+
+        
+
+        
 
     else:
         st.snow()
 
         st.toast("Loan Rejected")
+        st.markdown(f"""
+        <div style="
+        background:linear-gradient(135deg,#dc2626,#ef4444);
+        padding:25px;
+        border-radius:18px;
+        color:white;
+        text-align:center;
+        box-shadow:0 8px 20px rgba(0,0,0,.25);
+        ">
 
-        st.error("❌ Loan Rejected")
+        <h1>❌ LOAN REJECTED</h1>
 
-        st.progress(rejection_probability / 100)
+        <h2>Approval Probability : {approval_probability:.2f}%</h2>
 
-        st.warning("The application has a lower probability of approval.")
+        <p>The application has a low probability of approval.</p>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.progress(approval_probability/100)
+
+        
     pdf_data = {
             "Gender": gender,
             "Married": married,
@@ -370,20 +437,36 @@ if predict:
     # Metrics
     # -----------------------------
 
-    col1, col2 = st.columns(2)
+   # -----------------------------
+# Prediction Summary
+# -----------------------------
 
-    with col1:
+    st.write("")
 
+    card1, card2, card3, card4 = st.columns(4)
+
+    with card1:
         st.metric(
-            "Model Accuracy",
-            "78.38%"
+            label="🎯 Accuracy",
+            value="78.38%"
         )
 
-    with col2:
-
+    with card2:
         st.metric(
-            "Approval Probability",
-            f"{approval_probability:.2f}%"
+            label="📈 Approval",
+            value=f"{approval_probability:.2f}%"
+        )
+
+    with card3:
+        st.metric(
+            label="💰 Income",
+            value=f"₹ {total_income:,.0f}"
+        )
+
+    with card4:
+        st.metric(
+            label="🏦 Loan",
+            value=f"₹ {loan_amount:,.0f}"
         )
         
 
@@ -563,31 +646,6 @@ ax.set_xlabel("Predicted")
 ax.set_ylabel("Actual")
 
 st.pyplot(fig)
-col1,col2,col3,col4 = st.columns(4)
-
-with col1:
-    st.metric(
-        "Accuracy",
-        "78.38%"
-    )
-
-with col2:
-    st.metric(
-        "Algorithm",
-        "Logistic Regression"
-    )
-
-with col3:
-    st.metric(
-        "Dataset",
-        "614 Records"
-    )
-
-with col4:
-    st.metric(
-        "Features",
-        "13"
-    )
 
 st.write("---")
 

@@ -1,122 +1,78 @@
-# 🏦 Loan Prediction System
+# 🏦 AI Loan Prediction Dashboard
 
-A Machine Learning web application that predicts whether a loan application is likely to be approved based on applicant details. The application is built with **Python**, **Scikit-learn**, and **Streamlit**, providing an interactive interface for real-time predictions.
-
----
+An interactive Machine Learning web application built using **Python, Streamlit, Scikit-learn, Pandas, NumPy, Plotly, and Matplotlib** to predict whether a loan application is likely to be approved.
 
 ## 🚀 Live Demo
 
-> Add your Streamlit link here after deployment
+👉 https://loan-prediction-system07.streamlit.app/
 
-Example:
+## 📂 GitHub Repository
 
-https://loan-prediction-system.streamlit.app
-
----
-
-## 📸 Screenshots
-
-(Add screenshots after deployment)
-
-| Home Page | Prediction |
-|-----------|------------|
-| Upload Screenshot | Upload Screenshot |
+👉 https://github.com/amandwivedi7307/Loan-Prediction-System
 
 ---
 
-## ✨ Features
+## 📌 Features
 
-- Predict Loan Approval
-- Interactive Streamlit Dashboard
-- Data Preprocessing
-- Feature Engineering
-- Logistic Regression Model
-- Probability Score
-- Applicant Income Visualization
-- Loan Amount Visualization
-- Credit History Analysis
-- Responsive UI
+- ✅ Loan Approval Prediction
+- 📈 Approval Probability Gauge
+- 📊 Financial Analysis Dashboard
+- 📉 Confusion Matrix
+- 📄 Download Prediction Report (PDF)
+- 📥 Download Prediction (CSV)
+- 📜 Prediction History
+- 🌙 Dark Mode
+- 📊 Interactive Charts
+- 💰 Modern Dashboard UI
 
 ---
 
 ## 🛠 Tech Stack
 
 - Python
+- Streamlit
 - Pandas
 - NumPy
 - Scikit-learn
-- Streamlit
+- Plotly
 - Matplotlib
-- Joblib
+- Seaborn
+- ReportLab
 
 ---
 
-## 📂 Project Structure
+## 🤖 Machine Learning
 
-Loan-Prediction-System/
-│── app.py
-│── train_model.py
-│── loan_model.pkl
-│── loan_approval_dataset.csv
-│── requirements.txt
-│── README.md
-
----
-
-## ⚙ Installation
-
-Clone the repository
-
-```bash
-git clone https://github.com/amandwivedi7307/Loan-Prediction-System.git
-```
-
-Move into project folder
-
-```bash
-cd Loan-Prediction-System
-```
-
-Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the application
-
-```bash
-streamlit run app.py
-```
-
----
-
-## 📊 Machine Learning Model
-
-Algorithm Used
+Algorithm Used:
 
 - Logistic Regression
 
-Model Accuracy
+Accuracy:
 
 **78.38%**
 
+Evaluation Metrics:
+
+- Accuracy
+- Precision
+- Recall
+- F1 Score
+- Confusion Matrix
+
 ---
 
-## 📈 Dataset
 
-The project uses a Loan Approval Prediction dataset containing applicant information like
+## ⚙ Installation
 
-- Gender
-- Married
-- Dependents
-- Education
-- Self Employed
-- Applicant Income
-- Co-applicant Income
-- Loan Amount
-- Credit History
-- Property Area
+```bash
+git clone https://github.com/amandwivedi7307/Loan-Prediction-System.git
+
+cd Loan-Prediction-System
+
+pip install -r requirements.txt
+
+streamlit run app.py
+```
 
 ---
 
@@ -124,16 +80,10 @@ The project uses a Loan Approval Prediction dataset containing applicant informa
 
 **Aman Dwivedi**
 
-GitHub
+B.Tech AIML
 
+GitHub:
 https://github.com/amandwivedi7307
 
-LinkedIn
-
-(Add your LinkedIn URL)
-
----
-
-## ⭐ Support
-
-If you like this project, don't forget to ⭐ the repository.
+LinkedIn:
+https://www.linkedin.com/in/aman-kumar-dwivedi-6b4718297
