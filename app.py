@@ -253,6 +253,7 @@ with center_button:
         "🚀 Predict Loan Approval",
         use_container_width=True
     )
+    
 
 # -----------------------------
 # Prediction
@@ -553,6 +554,53 @@ if predict:
     st.subheader("Application Summary")
 
     st.dataframe(input_df, use_container_width=True)
+    # -----------------------------
+# AI Loan Advisor
+# -----------------------------
+
+    st.write("---")
+
+    st.subheader("🤖 AI Loan Advisor")
+
+    advice = []
+
+    if credit_history == 0:
+        advice.append("❌ Your credit history is poor. Improve your credit score to increase approval chances.")
+
+    if applicant_income < 3000:
+        advice.append("💰 Applicant income is quite low. A higher income generally improves eligibility.")
+
+    if loan_amount > 300:
+        advice.append("🏦 Requested loan amount is high compared to typical approvals.")
+
+    if loan_term > 360:
+        advice.append("📅 Long loan tenure may reduce approval chances.")
+
+    if self_emp == "Yes":
+        advice.append("💼 Self-employed applicants may need stronger financial documents.")
+
+    if approval_probability >= 80:
+        st.success("🎯 AI Analysis: Excellent approval chances!")
+
+    elif approval_probability >= 60:
+        st.info("🙂 AI Analysis: Good approval chances.")
+
+    elif approval_probability >= 40:
+        st.warning("⚠️ AI Analysis: Moderate approval chances.")
+
+    else:
+        st.error("🚨 AI Analysis: Low approval chances.")
+
+    if advice:
+        st.markdown("### Suggestions")
+
+        for item in advice:
+            st.write(item)
+
+    else:
+        st.success("✅ AI could not find any major risk factors.")
+    
+
     st.write("---")
     st.header("📊 Financial Analysis Dashboard")
 
