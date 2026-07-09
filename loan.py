@@ -79,3 +79,24 @@ print("Accuracy :", accuracy_score(y_test, pred))
 joblib.dump(model, "loan_model.pkl")
 
 print("Model Saved Successfully!")
+from sklearn.metrics import (
+    confusion_matrix,
+    classification_report,
+    accuracy_score
+)
+import joblib
+
+performance = {
+    "accuracy": accuracy_score(y_test, pred),
+    "confusion_matrix": confusion_matrix(y_test, pred),
+    "classification_report": classification_report(
+        y_test,
+        pred,
+        output_dict=True
+    )
+}
+
+joblib.dump(model, "loan_model.pkl")
+joblib.dump(performance, "performance.pkl")
+
+print("Model and performance saved successfully!")

@@ -1,0 +1,129 @@
+/* -----------------------------
+   Global Styles
+------------------------------ */
+
+body {
+    background-color: #f5f7fb;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* Hide Streamlit Menu & Footer */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
+}
+
+/* Title */
+
+.main-title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: bold;
+    color: #0E76A8;
+    margin-bottom: 5px;
+}
+
+.sub-title {
+    text-align: center;
+    color: gray;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+/* Cards */
+
+.metric-card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.12);
+    text-align: center;
+}
+
+/* Sidebar */
+
+section[data-testid="stSidebar"] {
+    background: #0E76A8;
+}
+
+section[data-testid="stSidebar"] * {
+    color: white !important;
+}
+
+/* Buttons */
+
+.stButton>button {
+
+    width:100%;
+
+    height:55px;
+
+    border-radius:10px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    background:#0E76A8;
+
+    color:white;
+
+    border:none;
+
+}
+
+.stButton>button:hover{
+
+    background:#085A80;
+
+}
+
+/* Input Boxes */
+
+div[data-baseweb="select"] {
+
+    border-radius:10px;
+
+}
+
+input {
+
+    border-radius:10px !important;
+
+}
+
+/* Success */
+
+.stSuccess {
+
+    border-radius:12px;
+
+}
+
+/* Error */
+
+.stError{
+
+    border-radius:12px;
+
+}
+
+/* Footer */
+
+.footer{
+
+    text-align:center;
+
+    margin-top:40px;
+
+    color:gray;
+
+}

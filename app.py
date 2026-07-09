@@ -3,13 +3,18 @@ import pandas as pd
 import numpy as np
 import joblib
 import matplotlib.pyplot as plt
+from assets import income_chart, loan_chart
+from report import create_pdf
+import seaborn as sns
+import plotly.graph_objects as go
+
 
 # -----------------------------
 # Page Configuration
 # -----------------------------
 
 st.set_page_config(
-    page_title="Loan Prediction System",
+    page_title="Loan Approval Prediction System",
     page_icon="🏦",
     layout="wide"
 )
@@ -19,62 +24,59 @@ st.set_page_config(
 # -----------------------------
 
 model = joblib.load("loan_model.pkl")
+performance = joblib.load("performance.pkl")
+
+
+
 
 # -----------------------------
 # Custom CSS
 # -----------------------------
 
-st.markdown("""
-<style>
+with open("style.css") as f:
+    st.markdown(
+        f"<style>{f.read()}</style>",
+        unsafe_allow_html=True
+    )
+    # -----------------------------
+# Dark Mode Toggle
+# -----------------------------
 
-.main{
-    background:#F4F6F9;
-}
+dark_mode = st.sidebar.toggle("🌙 Dark Mode")
 
-.title{
-    font-size:45px;
-    color:#0E76A8;
-    font-weight:bold;
-    text-align:center;
-}
+if dark_mode:
+    st.markdown("""
+    <style>
 
-.subtitle{
-    text-align:center;
-    color:gray;
-    font-size:18px;
-}
+    .stApp{
+        background-color:#0E1117;
+        color:white;
+    }
 
-.stButton>button{
-    width:100%;
-    height:55px;
-    border-radius:10px;
-    font-size:20px;
-    background:#0E76A8;
-    color:white;
-}
+    section[data-testid="stSidebar"]{
+        background:#161B22;
+    }
 
-.stButton>button:hover{
-    background:#085A80;
-    color:white;
-}
+    h1,h2,h3,h4,p,label{
+        color:white !important;
+    }
 
-.css-1d391kg{
-    background:#ffffff;
-}
-
-</style>
-""", unsafe_allow_html=True)
+    </style>
+    """, unsafe_allow_html=True)
 
 # -----------------------------
 # Sidebar
 # -----------------------------
 
+
+
 st.sidebar.image(
-    "https://img.icons8.com/color/96/bank-building.png",
-    width=80
+    "https://img.icons8.com/fluency/96/money-bag-rupee.png",
+    width=90
 )
 
-st.sidebar.title("Loan Prediction")
+st.sidebar.title("🏦 AI Loan Prediction")
+
 
 st.sidebar.write("---")
 
@@ -91,26 +93,54 @@ st.sidebar.markdown(
 )
 
 st.sidebar.markdown(
-"[💼 LinkedIn](https://linkedin.com)"
+"[💼 LinkedIn]( https://www.linkedin.com/in/aman-kumar-dwivedi-6b4718297)"
 )
 
 st.sidebar.write("---")
 
-st.sidebar.success("Machine Learning Project")
+st.sidebar.success("🚀 Machine Learning Project")
+
+st.sidebar.info("""
+### Tech Stack
+
+🐍 Python
+
+📊 Pandas
+
+🤖 Scikit-Learn
+
+🎨 Streamlit
+
+📈 Matplotlib
+
+🧠 Logistic Regression
+""")
+st.sidebar.metric(
+    "Model Accuracy",
+    f"{performance['accuracy'] * 100:.2f}%"
+)
 
 # -----------------------------
 # Title
 # -----------------------------
 
-st.markdown(
-'<p class="title">🏦 Loan Prediction Dashboard</p>',
-unsafe_allow_html=True
-)
+st.markdown("""
+<div style="
+background:linear-gradient(90deg,#2563EB,#1E3A8A);
+padding:25px;
+border-radius:15px;
+text-align:center;
+color:white;
+">
 
-st.markdown(
-'<p class="subtitle">Predict whether a customer is eligible for a loan using Machine Learning.</p>',
-unsafe_allow_html=True
-)
+<h1>🏦 AI Loan Prediction Dashboard</h1>
+
+<h4>
+Predict Loan Approval using Machine Learning
+</h4>
+
+</div>
+""",unsafe_allow_html=True)
 
 st.write("")
 
@@ -185,7 +215,9 @@ with right:
 
 st.write("")
 
-predict = st.button("🔍 Predict Loan Status")
+predict = st.button(
+    "🚀 Predict Loan Approval"
+)
 
 # -----------------------------
 # Prediction
@@ -224,6 +256,8 @@ if predict:
     probability = model.predict_proba(input_df).max() * 100
 
     st.write("")
+    st.write("Prediction:", prediction)
+    st.write("Probability:", f"{probability:.2f}%")
 
     # -----------------------------
     # Result
@@ -233,15 +267,93 @@ if predict:
 
         st.balloons()
 
-        st.success("🎉 Congratulations!")
+        st.toast("🎉 Loan Approved")
+
+        st.progress(probability/100)
 
         st.markdown("## ✅ Loan Approved")
 
     else:
+        st.snow()
+
+        st.toast("Loan Rejected")
 
         st.error("❌ Loan Rejected")
 
+        st.progress(probability/100)
+
         st.warning("The application has a lower probability of approval.")
+    pdf_data = {
+            "Gender": gender,
+            "Married": married,
+            "Dependents": dependents,
+            "Education": education,
+            "Self Employed": self_emp,
+            "Applicant Income": applicant_income,
+            "Coapplicant Income": coapplicant_income,
+            "Loan Amount": loan_amount,
+            "Loan Term": loan_term,
+            "Credit History": credit_history,
+            "Property Area": property_area
+        }
+
+    pdf_name = create_pdf(
+            pdf_data,
+            "Approved" if prediction == "Y" else "Rejected",
+            probability
+        )
+
+    with open(pdf_name, "rb") as pdf_file:
+        st.download_button(
+            label="📄 Download Prediction Report",
+            data=pdf_file,
+            file_name=pdf_name,
+            mime="application/pdf"
+        )
+    fig = go.Figure(go.Indicator(
+
+        mode="gauge+number",
+
+        value=probability,
+
+        title={'text':"Approval Probability"},
+
+        gauge={
+
+            'axis':{'range':[0,100]},
+
+            'bar':{'color':"#2563EB"},
+
+            'steps':[
+
+                {'range':[0,50],'color':"red"},
+
+                {'range':[50,80],'color':"orange"},
+
+                {'range':[80,100],'color':"green"}
+
+            ]
+
+        }
+
+    ))
+
+    st.plotly_chart(fig,use_container_width=True)
+    csv=input_df.copy()
+
+    csv["Prediction"]=prediction
+
+    st.download_button(
+
+    "📥 Download CSV",
+
+    csv.to_csv(index=False),
+
+    "Prediction.csv",
+
+    "text/csv"
+
+    )
 
     # -----------------------------
     # Metrics
@@ -262,6 +374,7 @@ if predict:
             "Approval Probability",
             f"{probability:.2f}%"
         )
+        
 
     # -----------------------------
     # Charts
@@ -275,31 +388,51 @@ if predict:
 
         st.subheader("Applicant Income")
 
-        fig, ax = plt.subplots(figsize=(5,3))
-
-        ax.bar(
-            ["Applicant", "Co-Applicant"],
-            [applicant_income, coapplicant_income]
-        )
-
-        ax.set_ylabel("Income")
-
-        st.pyplot(fig)
+        st.pyplot(
+    income_chart(
+        applicant_income,
+        coapplicant_income
+    )
+)
 
     with c2:
 
         st.subheader("Loan Amount")
 
-        fig2, ax2 = plt.subplots(figsize=(5,3))
+        st.pyplot(
+    loan_chart(
+        loan_amount
+    )
+)
+        
+    st.write("---")
+    st.subheader("🥧 Approval Probability")
 
-        ax2.bar(
-            ["Loan"],
-            [loan_amount]
-        )
+    approve = probability
+    reject = 100 - probability
 
-        ax2.set_ylabel("Amount")
+    fig3, ax3 = plt.subplots(figsize=(5,4))
 
-        st.pyplot(fig2)
+    ax3.pie(
+        [approve, reject],
+        labels=["Approval", "Rejection"],
+        autopct="%1.1f%%",
+        startangle=90
+    )
+
+    ax3.axis("equal")
+
+    st.pyplot(fig3)
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.info(f"💰 Total Income\n\n₹ {total_income:,.0f}")
+
+    with col2:
+        st.info(f"🏦 Loan Amount\n\n₹ {loan_amount:,.0f}")
+
+    with col3:
+        st.info(f"📈 Probability\n\n{probability:.2f}%")
 
     # -----------------------------
     # Credit History
@@ -326,6 +459,44 @@ if predict:
     st.subheader("Application Summary")
 
     st.dataframe(input_df, use_container_width=True)
+    st.write("---")
+    st.header("📊 Financial Analysis Dashboard")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Income Distribution")
+
+        fig, ax = plt.subplots(figsize=(5,4))
+
+        ax.bar(
+            ["Applicant", "Co-Applicant"],
+            [applicant_income, coapplicant_income],
+            color=["#2563EB", "#16A34A"]
+        )
+
+        ax.set_ylabel("Income")
+
+        for i, value in enumerate([applicant_income, coapplicant_income]):
+            ax.text(i, value, str(value), ha="center")
+
+        st.pyplot(fig)
+
+    with col2:
+        st.subheader("Loan vs Total Income")
+
+        fig2, ax2 = plt.subplots(figsize=(5,4))
+
+        ax2.bar(
+            ["Total Income", "Loan Amount"],
+            [total_income, loan_amount],
+            color=["#0EA5E9", "#EF4444"]
+        )
+
+        for i, value in enumerate([total_income, loan_amount]):
+            ax2.text(i, value, str(value), ha="center")
+
+        st.pyplot(fig2)
 
 # -----------------------------
 # Footer
@@ -333,19 +504,106 @@ if predict:
 
 st.write("---")
 
-st.markdown(
-"""
+st.header("📈 Model Performance")
+
+report = performance["classification_report"]
+
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric(
+        "Accuracy",
+        f"{performance['accuracy']*100:.2f}%"
+    )
+
+    st.metric(
+        "Precision",
+        f"{report['Y']['precision']:.2f}"
+    )
+
+with col2:
+    st.metric(
+        "Recall",
+        f"{report['Y']['recall']:.2f}"
+    )
+
+    st.metric(
+        "F1 Score",
+        f"{report['Y']['f1-score']:.2f}"
+    )
+st.subheader("📊 Confusion Matrix")
+
+cm = performance["confusion_matrix"]
+
+fig, ax = plt.subplots(figsize=(5,4))
+
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt="d",
+    cmap="Blues",
+    xticklabels=["Rejected", "Approved"],
+    yticklabels=["Rejected", "Approved"],
+    ax=ax
+)
+
+ax.set_xlabel("Predicted")
+ax.set_ylabel("Actual")
+
+st.pyplot(fig)
+col1,col2,col3,col4 = st.columns(4)
+
+with col1:
+    st.metric(
+        "Accuracy",
+        "78.38%"
+    )
+
+with col2:
+    st.metric(
+        "Algorithm",
+        "Logistic Regression"
+    )
+
+with col3:
+    st.metric(
+        "Dataset",
+        "614 Records"
+    )
+
+with col4:
+    st.metric(
+        "Features",
+        "13"
+    )
+
+st.write("---")
+
+st.markdown("""
+
 <div style="text-align:center">
 
-<h4>🏦 Loan Prediction System</h4>
+<h2>🏦 AI Loan Prediction Dashboard</h2>
 
-Developed by <b>Aman Dwivedi</b>
+<p>Developed by <b>Aman Dwivedi</b></p>
 
-<a href="https://github.com/amandwivedi7307" target="_blank">
-GitHub
+<p>
+
+<a href="https://github.com/amandwivedi7307">
+
+GitHub Repository
+
 </a>
 
+</p>
+
+<p>
+
+© 2026 All Rights Reserved
+
+</p>
+
 </div>
-""",
-unsafe_allow_html=True
-)
+
+""",unsafe_allow_html=True)
