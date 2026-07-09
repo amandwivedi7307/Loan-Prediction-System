@@ -253,11 +253,21 @@ if predict:
 
     prediction = model.predict(input_df)[0]
 
-    probability = model.predict_proba(input_df).max() * 100
+    prediction = model.predict(input_df)[0]
+
+    probs = model.predict_proba(input_df)[0]
+
+    classes = model.classes_
+
+    approve_index = list(classes).index("Y")
+
+    approval_probability = probs[approve_index] * 100
+
+    rejection_probability = 100 - approval_probability
 
     st.write("")
     st.write("Prediction:", prediction)
-    st.write("Probability:", f"{probability:.2f}%")
+    st.write("Approval Probability:", f"{approval_probability:.2f}%")
 
     # -----------------------------
     # Result
@@ -269,7 +279,7 @@ if predict:
 
         st.toast("🎉 Loan Approved")
 
-        st.progress(probability/100)
+        st.progress(approval_probability / 100)
 
         st.markdown("## ✅ Loan Approved")
 
@@ -280,7 +290,7 @@ if predict:
 
         st.error("❌ Loan Rejected")
 
-        st.progress(probability/100)
+        st.progress(rejection_probability / 100)
 
         st.warning("The application has a lower probability of approval.")
     pdf_data = {
@@ -300,7 +310,7 @@ if predict:
     pdf_name = create_pdf(
             pdf_data,
             "Approved" if prediction == "Y" else "Rejected",
-            probability
+            approval_probability
         )
 
     with open(pdf_name, "rb") as pdf_file:
@@ -310,11 +320,12 @@ if predict:
             file_name=pdf_name,
             mime="application/pdf"
         )
+    # gauge chart for approval probability
     fig = go.Figure(go.Indicator(
 
         mode="gauge+number",
 
-        value=probability,
+        value=approval_probability,
 
         title={'text':"Approval Probability"},
 
@@ -372,7 +383,7 @@ if predict:
 
         st.metric(
             "Approval Probability",
-            f"{probability:.2f}%"
+            f"{approval_probability:.2f}%"
         )
         
 
@@ -408,8 +419,8 @@ if predict:
     st.write("---")
     st.subheader("🥧 Approval Probability")
 
-    approve = probability
-    reject = 100 - probability
+    approve = approval_probability
+    reject = rejection_probability
 
     fig3, ax3 = plt.subplots(figsize=(5,4))
 
@@ -432,7 +443,7 @@ if predict:
         st.info(f"🏦 Loan Amount\n\n₹ {loan_amount:,.0f}")
 
     with col3:
-        st.info(f"📈 Probability\n\n{probability:.2f}%")
+        st.info(f"📈 Approval Probability\n\n{approval_probability:.2f}%")
 
     # -----------------------------
     # Credit History
