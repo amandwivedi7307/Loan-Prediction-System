@@ -36,11 +36,23 @@ def loan_chatbot(user_data):
             st.markdown(msg["content"])
 
     # User Input
-    prompt = st.chat_input(
-        "Ask anything about your loan..."
+    prompt = st.text_area(
+        "💬 Ask AI",
+        placeholder="Example: Why was my loan rejected?",
+        height=120,
+        key="ai_question"
     )
 
-    if prompt:
+    ask = st.button(
+        "🤖 Ask Gemini",
+        use_container_width=True,
+        key="ask_gemini"
+    )
+
+    if ask:
+        if prompt.strip() == "":
+            st.warning("Please enter a question.")
+            return
 
         st.session_state["messages"].append(
     {
@@ -88,13 +100,42 @@ Answer politely in simple English.
 
                 try:
 
-                    response = client.models.generate_content(
+                    import time
 
-                        model="gemini-3.5-flash",
+                    answer = None
 
-                        contents=full_prompt
+                    models = [
+                        "gemini-flash-latest",
+                        "gemini-2.5-flash"
+                    ]
 
-                    )
+                    for model_name in models:
+
+                        try:
+
+                            response = client.models.generate_content(
+                                model=model_name,
+                                contents=full_prompt
+                            )
+
+                            answer = response.text
+
+                            break
+
+                        except Exception as e:
+
+                            if "503" in str(e):
+
+                                time.sleep(5)
+
+                            else:
+
+                                answer = str(e)
+
+                    if answer:
+                        st.markdown(answer)
+                    else:
+                        st.error("Gemini server is busy. Please try again.")
 
                     answer = response.text
 
