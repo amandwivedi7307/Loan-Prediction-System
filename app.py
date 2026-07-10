@@ -2,11 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+from google import genai
 import matplotlib.pyplot as plt
 from assets import income_chart, loan_chart
 from report import create_pdf
 import seaborn as sns
 import plotly.graph_objects as go
+from gemini_chat import loan_chatbot
+
 
 
 # -----------------------------
@@ -25,6 +28,12 @@ st.set_page_config(
 
 model = joblib.load("loan_model.pkl")
 performance = joblib.load("performance.pkl")
+# -----------------------------
+# Gemini AI Configuration
+# -----------------------------
+
+# Gemini Client
+
 
 
 
@@ -253,6 +262,14 @@ with center_button:
         "🚀 Predict Loan Approval",
         use_container_width=True
     )
+if "prediction_result" not in st.session_state:
+    st.session_state.prediction_result = None
+
+if "approval_probability" not in st.session_state:
+    st.session_state.approval_probability = None
+
+if "input_data" not in st.session_state:
+    st.session_state.input_data = None
     
 
 # -----------------------------
@@ -288,6 +305,7 @@ if predict:
     # -----------------------------
 
     prediction = model.predict(input_df)[0]
+    
 
     probs = model.predict_proba(input_df)[0]
 
@@ -298,6 +316,20 @@ if predict:
     approval_probability = probs[approve_index] * 100
 
     rejection_probability = 100 - approval_probability
+    
+    st.session_state.prediction_result = prediction
+    st.session_state.approval_probability = approval_probability
+
+    st.session_state.input_data = {
+        "Applicant Income": applicant_income,
+        "Coapplicant Income": coapplicant_income,
+        "Loan Amount": loan_amount,
+        "Loan Term": loan_term,
+        "Credit History": credit_history,
+        "Education": education,
+        "Property Area": property_area,
+        "Self Employed": self_emp
+    }
 
     st.write("")
     st.write("Prediction:", prediction)
@@ -554,91 +586,79 @@ if predict:
     st.subheader("Application Summary")
 
     st.dataframe(input_df, use_container_width=True)
-    # -----------------------------
-# AI Loan Advisor
-# -----------------------------
+  
 
-    st.write("---")
-
-    st.subheader("🤖 AI Loan Advisor")
-
-    advice = []
-
-    if credit_history == 0:
-        advice.append("❌ Your credit history is poor. Improve your credit score to increase approval chances.")
-
-    if applicant_income < 3000:
-        advice.append("💰 Applicant income is quite low. A higher income generally improves eligibility.")
-
-    if loan_amount > 300:
-        advice.append("🏦 Requested loan amount is high compared to typical approvals.")
-
-    if loan_term > 360:
-        advice.append("📅 Long loan tenure may reduce approval chances.")
-
-    if self_emp == "Yes":
-        advice.append("💼 Self-employed applicants may need stronger financial documents.")
-
-    if approval_probability >= 80:
-        st.success("🎯 AI Analysis: Excellent approval chances!")
-
-    elif approval_probability >= 60:
-        st.info("🙂 AI Analysis: Good approval chances.")
-
-    elif approval_probability >= 40:
-        st.warning("⚠️ AI Analysis: Moderate approval chances.")
-
-    else:
-        st.error("🚨 AI Analysis: Low approval chances.")
-
-    if advice:
-        st.markdown("### Suggestions")
-
-        for item in advice:
-            st.write(item)
-
-    else:
-        st.success("✅ AI could not find any major risk factors.")
-    
-
+  
     st.write("---")
     st.header("📊 Financial Analysis Dashboard")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Income Distribution")
+            st.subheader("Income Distribution")
 
-        fig, ax = plt.subplots(figsize=(5,4))
+            fig, ax = plt.subplots(figsize=(5,4))
 
-        ax.bar(
-            ["Applicant", "Co-Applicant"],
-            [applicant_income, coapplicant_income],
-            color=["#2563EB", "#16A34A"]
-        )
+            ax.bar(
+                ["Applicant", "Co-Applicant"],
+                [applicant_income, coapplicant_income],
+                color=["#2563EB", "#16A34A"]
+            )
 
-        ax.set_ylabel("Income")
+            ax.set_ylabel("Income")
 
-        for i, value in enumerate([applicant_income, coapplicant_income]):
-            ax.text(i, value, str(value), ha="center")
+            for i, value in enumerate([applicant_income, coapplicant_income]):
+                ax.text(i, value, str(value), ha="center")
 
-        st.pyplot(fig)
+            st.pyplot(fig)
 
     with col2:
-        st.subheader("Loan vs Total Income")
+            st.subheader("Loan vs Total Income")
 
-        fig2, ax2 = plt.subplots(figsize=(5,4))
+            fig2, ax2 = plt.subplots(figsize=(5,4))
 
-        ax2.bar(
-            ["Total Income", "Loan Amount"],
-            [total_income, loan_amount],
-            color=["#0EA5E9", "#EF4444"]
-        )
+            ax2.bar(
+                ["Total Income", "Loan Amount"],
+                [total_income, loan_amount],
+                color=["#0EA5E9", "#EF4444"]
+            )
 
-        for i, value in enumerate([total_income, loan_amount]):
-            ax2.text(i, value, str(value), ha="center")
+            for i, value in enumerate([total_income, loan_amount]):
+                ax2.text(i, value, str(value), ha="center")
 
-        st.pyplot(fig2)
+            st.pyplot(fig2)
+  # -----------------------------
+# Gemini AI Chatbot
+# -----------------------------
+if st.session_state.prediction_result is not None:
+
+    user_data = {
+
+        "Applicant Income": applicant_income,
+
+        "Coapplicant Income": coapplicant_income,
+
+        "Loan Amount": loan_amount,
+
+        "Loan Term": loan_term,
+
+        "Credit History": credit_history,
+
+        "Education": education,
+
+        "Property Area": property_area,
+
+        "Self Employed": self_emp,
+
+        "Prediction": st.session_state.prediction_result,
+
+        "Approval Probability": st.session_state.approval_probability
+
+    }
+
+    loan_chatbot(user_data)
+
+
 
 # -----------------------------
 # Footer
