@@ -1,12 +1,12 @@
 import streamlit as st
-from google import genai
+from groq import Groq
 import time
 
 # -----------------------------
 # Gemini Client
 # -----------------------------
-client = genai.Client(
-    api_key=st.secrets["GEMINI_API_KEY"]
+client = Groq(
+    api_key=st.secrets["GROQ_API_KEY"]
 )
 
 # -----------------------------
@@ -16,15 +16,23 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 
+
+
 def loan_chatbot(user_data):
 
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = []
+
     st.markdown("## 🤖 AI Loan Assistant")
+
+    
 
     # Chat History
     # -----------------------------
 # Conversation
 # -----------------------------
-    if st.session_state["messages"]:
+    if "messages" in st.session_state and st.session_state["messages"]:
 
         st.markdown("### 💬 Conversation")
 
@@ -36,18 +44,18 @@ def loan_chatbot(user_data):
             else:
                 st.success("🤖 " + msg["content"])
 
-    prompt = st.text_area(
-        "💬 Ask AI",
-        placeholder="Example: Why was my loan rejected?",
-        height=120,
-        key="loan_ai_prompt"
-    )
+    with st.form("loan_chat_form", clear_on_submit=True):
 
-    ask = st.button(
-        "🚀 Ask Gemini",
-        use_container_width=True,
-        key="loan_ai_button"
-    )
+        prompt = st.text_area(
+            "💬 Ask AI",
+            placeholder="Example: Why was my loan rejected?",
+            height=120
+        )
+
+        ask = st.form_submit_button(
+            "🚀 Ask AI",
+            use_container_width=True
+        )
 
     if ask:
 
@@ -84,40 +92,44 @@ Question:
 Answer in simple English.
 """
 
-        with st.spinner("🤖 Thinking..."):
-
+        with st.spinner("🤖 AI is Thinking..."):
             answer = None
 
-            for model_name in [
-                "gemini-flash-latest",
-                "gemini-2.0-flash"
-            ]:
+            try:
 
-                try:
+                response = client.chat.completions.create(
 
-                    response = client.models.generate_content(
-                        model=model_name,
-                        contents=full_prompt
-                    )
+                    model="llama-3.3-70b-versatile",
 
-                    answer = response.text
-                    break
+                    messages=[
 
-                except Exception as e:
+                        {
+                            "role": "system",
+                            "content": "You are a professional AI Loan Advisor. Give short, clear and practical answers."
+                        },
 
-                    if "503" in str(e):
-                        time.sleep(3)
-                        st.warning("⚠️ Gemini is busy. Retrying...")
-                        continue
-                    elif "429" in str(e):
-                        st.warning("⚠️ AI quota reached. Please try again after a minute.")
-                        continue
-                    else:
-                        answer = str(e)
-                        break
+                        {
+                            "role": "user",
+                            "content": full_prompt
+                        }
+
+                    ],
+
+                    temperature=0.5,
+                    max_tokens=500
+
+                )
+
+                answer = response.choices[0].message.content
+
+            except Exception as e:
+
+                answer = f"❌ Error : {e}"
+
+            
 
         if answer is None:
-            answer = "Gemini server is busy. Please try again."
+            answer = "Groq server is busy. Please try again."
 
         st.session_state["messages"].append(
             {
@@ -125,16 +137,10 @@ Answer in simple English.
                 "content": answer
             }
         )
-        if st.session_state["messages"]:
-            st.markdown("### Conversation")
+        st.rerun()
 
-            for msg in st.session_state["messages"]:
 
-                if msg["role"] == "user":
-                    st.info("👤 " + msg["content"])
-
-                else:
-                    st.success("🤖 " + msg["content"])
+        
         
 
         

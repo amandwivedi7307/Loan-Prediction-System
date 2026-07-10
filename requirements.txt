@@ -7,4 +7,4 @@ seaborn
 plotly
 joblib
 reportlab
-google-genai==1.30.0
+groq

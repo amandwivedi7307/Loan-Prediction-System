@@ -21,6 +21,20 @@ st.set_page_config(
     page_icon="🏦",
     layout="wide"
 )
+# -----------------------------
+# Session State Initialization
+# -----------------------------
+if "prediction_result" not in st.session_state:
+    st.session_state["prediction_result"] = None
+
+if "approval_probability" not in st.session_state:
+    st.session_state["approval_probability"] = None
+
+if "input_data" not in st.session_state:
+    st.session_state["input_data"] = None
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
 
 # -----------------------------
 # Load Model
