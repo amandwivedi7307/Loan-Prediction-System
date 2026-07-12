@@ -105,7 +105,7 @@ st.sidebar.write("---")
 
 st.sidebar.markdown("## 👨‍💻 Developer")
 
-st.sidebar.write("**Aman Dwivedi**")
+st.sidebar.write("**Aman Kumar Dwivedi**")
 
 st.sidebar.write("B.Tech AIML")
 
@@ -743,7 +743,7 @@ st.markdown("""
 
 <h2>🏦 AI Loan Prediction Dashboard</h2>
 
-<p>Developed by <b>Aman Dwivedi</b></p>
+<p>Developed by <b>Aman Kumar Dwivedi</b></p>
 
 <p>
 
