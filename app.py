@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-from google import genai
 import matplotlib.pyplot as plt
 from assets import income_chart, loan_chart
 from report import create_pdf
