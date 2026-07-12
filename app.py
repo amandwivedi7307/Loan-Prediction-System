@@ -11,6 +11,7 @@ from gemini_chat import loan_chatbot
 
 
 
+
 # -----------------------------
 # Page Configuration
 # -----------------------------
@@ -117,6 +118,12 @@ st.sidebar.markdown(
 st.sidebar.markdown(
 "[💼 LinkedIn]( https://www.linkedin.com/in/aman-kumar-dwivedi-6b4718297)"
 )
+
+st.sidebar.markdown(
+"[📧 Email](mailto:amandwivedi99188@gmail.com)"
+)
+
+
 
 st.sidebar.write("---")
 
